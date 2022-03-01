@@ -1,0 +1,45 @@
+#!/bin/bash
+
+set -e
+
+if [ -z "${WDY_XBUILD_ROOT}" ]; then
+	echo "WDY_XBUILD_ROOT not set"
+	exit 1
+fi
+
+SRC=$(dirname $(readlink -f "$0"))
+
+ARCHS="x86 linux x86_64 armeabi-v7a arm64-v8a"
+
+
+build() {
+	ARCH=$1
+	BLD=$(mktemp -d -t poco-build-XXXXXXXXX)	
+	cd ${BLD}
+	
+	# The use of the external SSL library required some hacking as the library prefix is not what cmake expects (despite setting the shared-lib-prefix)
+	# and FindOpenSSL does NOT simply use pkgconfig
+	${WDY_XBUILD_ROOT}/bin/cmake-android-configure ${SRC} ${ARCH} \
+		-DOPENSSL_CRYPTO_LIBRARY=${WDY_XBUILD_ROOT}/${ARCH}/lib/wdycrypto.so \
+		-DOPENSSL_INCLUDE_DIR=${WDY_XBUILD_ROOT}/${ARCH}/include \
+		-DOPENSSL_SSL_LIBRARY=${WDY_XBUILD_ROOT}/${ARCH}/lib/wdyssl.so \
+		-DENABLE_NETSSL=ON \
+		-DOPENSSL_FOUND=TRUE \
+		-DENABLE_CRYPTO=ON \
+		-DENABLE_JWT=ON	
+		#-DCMAKE_CXX_FLAGS="-std=c++17"
+	
+	make -j8
+	make install
+	
+	rm -rf ${BLD}
+}
+
+for ARCH in ${ARCHS}; do
+
+	build ${ARCH}
+
+
+
+done
+

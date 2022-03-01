@@ -2,6 +2,11 @@ cmake_minimum_required(VERSION 3.5.0)
 
 project(Poco)
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Android")
+	# set alternative library prefix on android to avoid clashes with system libs
+	set(CMAKE_SHARED_LIBRARY_PREFIX wdy)
+endif()
+
 file(STRINGS "${PROJECT_SOURCE_DIR}/libversion" SHARED_LIBRARY_VERSION)
 # Read the version information from the VERSION file
 file(STRINGS "${PROJECT_SOURCE_DIR}/VERSION" PACKAGE_VERSION)
