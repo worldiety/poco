@@ -2,9 +2,12 @@ cmake_minimum_required(VERSION 3.5.0)
 
 project(Poco)
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Android")
+if(POCO_USE_WDY_PREFIX)
 	# set alternative library prefix on android to avoid clashes with system libs
 	set(CMAKE_SHARED_LIBRARY_PREFIX wdy)
+	message("Using lib prefix: wdy")
+else()
+	message(FATAL_ERROR "H")
 endif()
 
 file(STRINGS "${PROJECT_SOURCE_DIR}/libversion" SHARED_LIBRARY_VERSION)

@@ -9,7 +9,7 @@ fi
 
 SRC=$(dirname $(readlink -f "$0"))
 
-ARCHS="x86 linux x86_64 armeabi-v7a arm64-v8a"
+ARCHS="linux x86 x86_64 armeabi-v7a arm64-v8a"
 
 
 build() {
@@ -26,8 +26,8 @@ build() {
 		-DENABLE_NETSSL=ON \
 		-DOPENSSL_FOUND=TRUE \
 		-DENABLE_CRYPTO=ON \
-		-DENABLE_JWT=ON	
-		#-DCMAKE_CXX_FLAGS="-std=c++17"
+		-DENABLE_JWT=ON	\
+		-DPOCO_USE_WDY_PREFIX=ON
 	
 	make -j8
 	make install
@@ -36,10 +36,6 @@ build() {
 }
 
 for ARCH in ${ARCHS}; do
-
 	build ${ARCH}
-
-
-
 done
 
